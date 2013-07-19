@@ -5,6 +5,8 @@ An easy way to expand or collapse menu items, especially when there are many lev
 
 ## Examples
 
+[Screen recording on YouTube](https://www.youtube.com/watch?v=CVHiKA06XHU) (0:12)
+
 Expanded
 ![](https://raw.github.com/infowrap/breadcrumbs/master/screenshots/expanded.png)
 
