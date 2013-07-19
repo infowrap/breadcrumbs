@@ -1,0 +1,89 @@
+
+* {
+  box-sizing: border-box;
+  -webkit-font-smoothing: antialiased;
+  -webkit-margin-before: auto;
+  -webkit-margin-after: auto;
+  text-indent: 0;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  color: #333;
+}
+
+.clearfix() {
+  *zoom: 1;
+  &:before,
+  &:after {
+    display: table;
+    content: "";
+  }
+  &:after {
+    clear: both;
+  }
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+}
+
+html {
+  font-size: 15px;
+}
+
+.container {
+  padding: 50px;
+}
+
+.breadcrumbs {
+  overflow: hidden;
+
+  .crumbs {
+    .clearfix;
+    font-weight: bold;
+    width: 999999px;
+    background: orange;
+    height: 44px;
+
+    overflow: hidden;
+
+    .crumb {
+      -webkit-transition: all .025s linear;
+         -moz-transition: all .025s linear;
+          -ms-transition: all .025s linear;
+           -o-transition: all .025s linear;
+              transition: all .025s linear;
+
+      color: #fff;
+      height: 44px;
+      line-height: 44px;
+      padding: 0 round(44px * .333); // needs to be communicated to JS
+
+      float: left;
+      display: inline-block;
+      position: relative;
+      overflow: hidden;
+      white-space: nowrap;
+
+      &:last-child {
+
+        .shader {
+          box-shadow: none;
+        }
+      }
+
+      .shader {
+        display: block;
+        width: 44px;
+        height: 44px;
+        background: black;
+        position: absolute;
+        top: 0;
+        right: -88px;
+        box-shadow: 0 0 45px 5px darken(orange, 40%);
+      }
+    }
+  }
+}
