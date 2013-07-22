@@ -1,0 +1,6 @@
+bower_components
+node_modules
+.bowerrc
+Gruntfile.coffee
+bower.json
+install.sh
