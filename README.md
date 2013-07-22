@@ -6,12 +6,17 @@ An easy way to expand or collapse menu items, especially when there are many lev
 
 Clone the repo with its submodules ..
 
-	git clone https://github.com/infowrap/breadcrumbs.git --recursive
-	cd breadcrumbs
+	git clone https://github.com/infowrap/breadcrumbs.git
+	cd breadcrumbs	
 
 Then to build, run ..
 
-    sh build/basic/install.sh
+    sh install.sh
+    # after the first time you can simply run `grunt`
+
+To work on the project with a watcher that builds on save, run ..
+
+	grunt dev
 
 
 ## Examples

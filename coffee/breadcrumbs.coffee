@@ -13,7 +13,6 @@ currently no options available
 
   $.fn.infowrapBreadcrumbs = (options) ->
 
-
     breadcrumbsObj = this
 
     options = $.extend {}, $.fn.infowrapBreadcrumbs.defaultOptions, options
@@ -30,7 +29,9 @@ currently no options available
     crumbWidthsCombined[0] = 0
 
     breadcrumbsObj.find(".crumb").each ->
-      crumbWidth = $(this).width()
+      crumbObj = $(this)
+      crumbObj.append """<div class="shader"></div>"""
+      crumbWidth = crumbObj.width()
       crumbWidthTotal = crumbWidth + crumbPadding * 2
       crumbWidths[a] = crumbWidthTotal
       crumbsWidth += crumbWidthTotal
