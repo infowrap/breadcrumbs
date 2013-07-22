@@ -1,7 +1,0 @@
-*.log
-.bowerrc
-boilerplate
-bower_components
-Gruntfile.coffee
-install.sh
-node_modules
