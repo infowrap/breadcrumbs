@@ -4,9 +4,9 @@ An easy way to expand or collapse menu items, especially when there are many lev
 
 ## Build
 
-Be sure to pull this repo down with its submodules ..
+Create a new folder, `cd` into it and run (cloning the repo with its submodules) ..
 
-	git clone https://github.com/infowrap/breadcrumbs.git --recursive
+	git clone https://github.com/infowrap/breadcrumbs.git . --recursive
 
 Then to build, run ..
 
