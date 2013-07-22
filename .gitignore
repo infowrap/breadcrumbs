@@ -1,7 +1,6 @@
 *.log
 .bowerrc
 boilerplate
-bower.json
 bower_components
 Gruntfile.coffee
 install.sh
