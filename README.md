@@ -1,14 +1,16 @@
-Be sure to pull this repo down with its submodules ..
-
-	
-
-To install run ..
-
-    sh install.sh
-
 # breadcrumbs
 
 An easy way to expand or collapse menu items, especially when there are many levels like in folder navigation.
+
+## Build
+
+Be sure to pull this repo down with its submodules ..
+
+	git clone https://github.com/infowrap/breadcrumbs.git . --recursive
+
+Then to build, run ..
+
+    sh build/basic/install.sh
 
 
 ## Examples
