@@ -1,22 +1,27 @@
 {
-  "name": "infowrap-open-source",
+  "name": "infowrap-breadcrumbs",
   "version": "0.0.0",
-  "description": "",
+  "description": "An easy way to expand or collapse menu items, especially when there are many levels like in folder navigation.",
   "main": "index.html",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/infowrap/breadcrumbs.git"
+  },
   "author": "infowrap.com",
   "license": "https://github.com/infowrap/build/blob/master/LICENSE",
+  "bugs": {
+    "url": "https://github.com/infowrap/breadcrumbs/issues"
+  },
   "devDependencies": {
     "bower": "~0.10.0",
     "grunt": "~0.4.1",
-    "grunt-docular": "~0.1.1",
     "grunt-contrib-coffee": "~0.7.0",
     "grunt-contrib-clean": "~0.5.0",
     "grunt-contrib-less": "~0.6.4",
     "grunt-contrib-jade": "~0.7.0",
-    "grunt-contrib-watch": "~0.5.1",
     "grunt-contrib-concat": "~0.3.0",
     "grunt-contrib-uglify": "~0.2.2"
   }
