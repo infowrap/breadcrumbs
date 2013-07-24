@@ -28,7 +28,12 @@ self-invoking anonymous wrapper, which imports jquery on last line
     ###
     save this as a variable so it isn't lost or confused with another this
     ###
-    crumbsObj = this
+    infowrapBreadcrumbsObj = this
+
+    ###
+    cache the .crumbs to an object for later use
+    ###
+    crumbsObj = infowrapBreadcrumbsObj.find ".crumbs"
 
     ###
     allowing formal options overrides to be respected
@@ -43,7 +48,6 @@ self-invoking anonymous wrapper, which imports jquery on last line
     $.fn.infowrapBreadcrumbs.defaultOptions.minWidth = 50;
     $('#helloWorld').infowrapBreadcrumbs();
     $('#goodbyeWorld').infowrapBreadcrumbs();
-
     ###
     options = $.extend {}, $.fn.infowrapBreadcrumbs.defaultOptions, options
 
@@ -51,9 +55,19 @@ self-invoking anonymous wrapper, which imports jquery on last line
     globalizing the variables for the method, so if we have to make a change to
     the varable on its way in, we have a place to address that potential
     ###
+    maxCollapsedCrumbs = options.maxCollapsedCrumbs - 1
     minWidth = options.minWidth
     shaderWidth = options.shaderWidth
     shaderAntumbra = options.shaderAntumbra
+
+    ###
+    the nth crumb that is collapsed counting from the left, and the nth crumb
+    that is expanded counting from the left. the expanded crumb is only detected
+    if no collapsed crumb is found. this prevents an error when on a small
+    screen and all are collapsed
+    ###
+    collapsedCrumb = 0
+    expandedCrumb = 0
 
     ###
     the total number of crumbs
@@ -88,10 +102,10 @@ self-invoking anonymous wrapper, which imports jquery on last line
       ###
       define the crumb object as its used more than once
       ###
-      crumbObj = $(this)
+      crumbObj = $ this
 
       ###
-      cache the crumb to an object for later use
+      cache the crumb to an objects for later use
       ###
       crumbObjs[index + 1] = crumbObj
 
@@ -150,8 +164,7 @@ self-invoking anonymous wrapper, which imports jquery on last line
       over all the crumbs following the currenct crumb
       ###
       afterCrumb = 0
-      for i in [crumb + 1 .. totalCrumbs] by 1
-        afterCrumb += crumbWidths[i]
+      afterCrumb += crumbWidths[i] for i in [crumb + 1 .. totalCrumbs] by 1
 
       ###
       this is the magic, the current crumb width is simlpy the difference
@@ -191,21 +204,54 @@ self-invoking anonymous wrapper, which imports jquery on last line
         crumbObj.outerWidth crumbWidthDiff
 
         ###
+        if the maxCollapsedCrumbs is set, then lets make it happen
+        ###
+        if maxCollapsedCrumbs
+
+          ###
+          when a crumb diff width is equal to or less than the minimum crumb
+          width, then is collapsed, then flag it with a data attribute otherwise
+          set it to false
+          ###
+          if crumbWidthDiff < minWidth
+            crumbObj.attr "data-collapsed", true
+          else
+            crumbObj.attr "data-collapsed", false
+
+          ###
+          look for the first instance of false, in other words the first
+          uncollapsed crumb. todo: optimize this to run once
+          ###
+          collapsedCrumb = crumbsObj.find(""".crumb[data-collapsed="false"]:first""").index()
+
+          if collapsedCrumb < 0
+            collapsedCrumb = totalCrumbs - 1
+            expandedCrumb = crumbsObj.find(""".crumb[data-collapsed="true"]:first""").index()
+
+          ###
+          if the collapsed crumb index is greater than or equal to the
+          maxCollapsedCrumbs option, then there are too many crumbs visible,
+          and the .crumbs container needs to go left and be hidden by the
+          overflow:hidden of the parent, .infowrap-breadcrumbs. the crumbs
+          can go too far right, because of the loose if conditional, so a
+          protection maxes out at 0
+          ###
+          if collapsedCrumb >= maxCollapsedCrumbs or expandedCrumb >= 0
+            crumbsLeft = -minWidth * (collapsedCrumb - maxCollapsedCrumbs)
+            if crumbsLeft > 0 then crumbsLeft = 0
+            crumbsObj.css "left", crumbsLeft
+
+        ###
         the shader moves with the window resize to simulate a growing overlap
         as the objects get tighter.
         ###
         shaderX = -shaderWidth - shaderAntumbra + crumbWidth - crumbWidthDiff
 
         ###
-        the `right` css attribute should not be less than 0
-        ###
-        if shaderX > 0 then shaderX = 0
-
-        ###
         the div that creates the shadow should not enter the visible space, it
         should always be cropped out of view by overflow:hidden
         ###
-        if shaderX < shaderWidth then shaderX = -shaderWidth
+        if shaderX > -shaderWidth then shaderX = -shaderWidth
 
         ###
         set the shader x position off the right with position absolute
@@ -245,10 +291,13 @@ self-invoking anonymous wrapper, which imports jquery on last line
     ###
     windowResize is a set of operations used in a couple of places, it has been
     added as a method to call on load and on resize. when the user resizes the
-    page, run the updateCrumb method on each crumb
+    page, run the updateCrumb method on each crumb. One is subtracted from
+    totalCrumbs, because there's no need to adjust the last crumb width as the
+    overflow:hidden will handle it
     ###
     windowResize = ->
-      updateCrumb crumb, crumbsObj.width() for crumb in [1 .. totalCrumbs] by 1
+      for crumb in [1 .. totalCrumbs - 1] by 1
+        updateCrumb crumb, infowrapBreadcrumbsObj.width()
 
     ###
     run the above method on every fire of window resize
@@ -276,6 +325,11 @@ self-invoking anonymous wrapper, which imports jquery on last line
   $.fn.infowrapBreadcrumbs.defaultOptions =
 
     ###
+    the maximum number of visible collapsed crumbs counting from the left
+    ###
+    maxCollapsedCrumbs: 3
+
+    ###
     the minimum width of a crumb when collapsed
     ###
     minWidth: 30
@@ -289,7 +343,7 @@ self-invoking anonymous wrapper, which imports jquery on last line
     ###
     the distance of your css shadow antumbra in pixels
     ###
-    shaderAntumbra: 20
+    shaderAntumbra: 25
 
 ###
 import jquery into the self-invoking anonymous wrapper

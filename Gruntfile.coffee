@@ -5,8 +5,7 @@ module.exports = (grunt) ->
     pkg:
       grunt.file.readJSON "package.json"
     clean:
-      default:
-        [
+      default: [
           "js"
           "css"
           "index.html"
@@ -65,28 +64,78 @@ module.exports = (grunt) ->
         files: "js/breadcrumbs.min.js":"js/breadcrumbs.js"
       example:
         files: "js/example.min.js":"js/example.js"
+    watch:
+      all:
+        files: [
+          "coffee/**/*.coffee"
+          "less/**/*.less"
+          "jade/**/*.jade"
+        ]
+        tasks: "build"
+      coffee:
+        files: "coffee/**/*.coffee"
+        tasks: "buildCoffee"
+      jade:
+        files: "jade/**/*.jade"
+        tasks: "buildJade"
+      less:
+        files: "less/**/*.less"
+        tasks: "buildLess"
 
-  grunt.loadNpmTasks "grunt-contrib-coffee"
-  grunt.loadNpmTasks "grunt-contrib-less"
   grunt.loadNpmTasks "grunt-contrib-clean"
-  grunt.loadNpmTasks "grunt-contrib-jade"
-  grunt.loadNpmTasks "grunt-contrib-connect"
+  grunt.loadNpmTasks "grunt-contrib-coffee"
   grunt.loadNpmTasks "grunt-contrib-concat"
+  grunt.loadNpmTasks "grunt-contrib-jade"
+  grunt.loadNpmTasks "grunt-contrib-less"
   grunt.loadNpmTasks "grunt-contrib-uglify"
+  grunt.loadNpmTasks "grunt-contrib-watch"
 
-  grunt.registerTask "default", "build"
-  grunt.registerTask "build", [
-    "clean"
-    "concat:jade"
-    "jade"
-    "clean:jade"
+  grunt.registerTask "buildCoffee", [
     "coffee"
     "uglify:breadcrumbs"
     "uglify:example"
     "concat:jsMin"
+  ]
+
+  grunt.registerTask "buildJade", [
+    "concat:jade"
+    "jade"
+    "clean:jade"
+  ]
+
+  grunt.registerTask "buildLess", [
     "less:breadcrumbs"
     "less:breadcrumbsMin"
     "less:template"
     "less:templateMin"
     "less:combinedMin"
   ]
+
+  grunt.registerTask "build", [
+    "clean:default"
+    "buildCoffee"
+    "buildJade"
+    "buildLess"
+  ]
+
+  grunt.registerTask "devAll", [
+    "build"
+    "watch:all"
+  ]
+
+  grunt.registerTask "devCoffee", [
+    "buildCoffee"
+    "watch:coffee"
+  ]
+
+  grunt.registerTask "devLess", [
+    "buildLess"
+    "watch:less"
+  ]
+
+  grunt.registerTask "devJade", [
+    "buildJade"
+    "watch:jade"
+  ]
+
+  grunt.registerTask "default", "build"

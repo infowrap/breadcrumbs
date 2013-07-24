@@ -1,27 +1,28 @@
 
 @import "boilerplate/mixins.less";
 
+@base: 44px;
+
 .infowrap-breadcrumbs {
   color: #fff;
+  background-color: orange;
   overflow: hidden;
-  height: 44px;
   position: relative;
+  height: @base;
 
   .crumbs {
     .clearfix;
+    .transition(all .5s ease);
     position: absolute;
     top: 0;
     left: 0;
     font-weight: bold;
     width: 999999px;
-    background: orange;
-    height: 44px;
     overflow: hidden;
 
     .crumb {
-      height: 44px;
-      line-height: 44px;
-      padding: 0 round(44px * .333); // needs to be communicated to JS
+      line-height: @base;
+      padding: 0 round(@base * .333); // needs to be communicated to JS
       float: left;
       display: inline-block;
       position: relative;
@@ -36,14 +37,12 @@
       }
 
       .shader {
-        display: block;
-        width: 44px;
-        height: 44px;
-        background: black;
+        width: @base;
+        height: @base;
         position: absolute;
         top: 0;
-        right: -88px;
-        box-shadow: 0 0 45px 5px darken(orange, 40%);
+        right: @base * -2;
+        box-shadow: 0 0 60px 0px #000;
       }
     }
   }
