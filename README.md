@@ -10,6 +10,21 @@ Add jQuery and then ..
       $(".infowrap-breadcrumbs").infowrapBreadcrumbs();
     });
 
+Options ..
+
+    // the maximum number of visible collapsed crumbs counting from the left
+    maxCollapsedCrumbs: 3
+
+    // the minimum width of a crumb when collapsed
+    minWidth: 30
+
+    // width of the shader block that is hidden in pixels. it is in the crumb
+    // object, but is pushed far right and hidden by the crumb's `overflow: hidden`
+    shaderWidth: 44
+
+    // the distance of your css shadow antumbra in pixels
+    shaderAntumbra: 25
+
 
 ## Examples
 

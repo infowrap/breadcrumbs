@@ -1,4 +1,7 @@
 {
+  "name": "infowrap-breadcrumbs",
+  "version": "0.1.0",
+  "main": "js/breadcrumbs.min.js",
   "dependencies": {
     "jquery": "~2.0.3"
   }
