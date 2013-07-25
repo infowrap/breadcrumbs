@@ -24,7 +24,6 @@ self-invoking anonymous wrapper, which imports jquery on last line
   declaring the jQery plugin
   ###
   $.fn.infowrapBreadcrumbs = (options) ->
-
     ###
     save this as a variable so it isn't lost or confused with another this
     ###
@@ -49,16 +48,18 @@ self-invoking anonymous wrapper, which imports jquery on last line
     $('#helloWorld').infowrapBreadcrumbs();
     $('#goodbyeWorld').infowrapBreadcrumbs();
     ###
-    options = $.extend {}, $.fn.infowrapBreadcrumbs.defaultOptions, options
+    bcOptions = $.extend {}, $.fn.infowrapBreadcrumbs.defaultOptions, options
 
     ###
     globalizing the variables for the method, so if we have to make a change to
     the varable on its way in, we have a place to address that potential
     ###
-    maxCollapsedCrumbs = options.maxCollapsedCrumbs - 1
-    minWidth = options.minWidth
-    shaderWidth = options.shaderWidth
-    shaderAntumbra = options.shaderAntumbra
+    maxCollapsedCrumbs = bcOptions.maxCollapsedCrumbs - 1
+    minWidth = bcOptions.minWidth
+    shaderWidth = bcOptions.shaderWidth
+    shaderAntumbra = bcOptions.shaderAntumbra
+    collapsedCrumb = expandedCrumb = totalCrumbs = 0
+    crumbWidths = crumbObjs = shaderObjs = []
 
     initCrumbs = () ->
       ###
@@ -111,6 +112,13 @@ self-invoking anonymous wrapper, which imports jquery on last line
         crumbObjs[index + 1] = crumbObj
 
         ###
+        ensure attr is removed
+        this function is called on refresh so some crumbs may have it
+        ###
+        crumbObj.removeAttr "data-collapsed"
+        crumbObj.removeAttr "style"
+
+        ###
         add the shader div, which is a moving piece. would like to add with
         :after, but currently it cant be manipulated in jquery. triple quotes
         used so the html can be typed naturally
@@ -133,6 +141,17 @@ self-invoking anonymous wrapper, which imports jquery on last line
         +1 to total number of crumbs
         ###
         totalCrumbs++
+
+    ###
+    windowResize is a set of operations used in a couple of places, it has been
+    added as a method to call on load and on resize. when the user resizes the
+    page, run the updateCrumb method on each crumb. One is subtracted from
+    totalCrumbs, because there's no need to adjust the last crumb width as the
+    overflow:hidden will handle it
+    ###
+    windowResize = ->
+      for crumb in [1 .. totalCrumbs - 1] by 1
+        updateCrumb crumb, infowrapBreadcrumbsObj.width()
 
     ###
     method to run on each crumb to define its width against the other crumbs
@@ -291,31 +310,28 @@ self-invoking anonymous wrapper, which imports jquery on last line
         ###
         shaderObj.css "right", -shaderWidth - shaderAntumbra
 
+    if options is 'refresh'
+      ###
+      refresh crumbs
+      data binding and dom updates
+      this reinitializes the crumbs to ensure accuracy
+      ###
+      initCrumbs()
+      windowResize()
+
     ###
     INITIALIZE
     ###
     initCrumbs()
-
     ###
-    windowResize is a set of operations used in a couple of places, it has been
-    added as a method to call on load and on resize. when the user resizes the
-    page, run the updateCrumb method on each crumb. One is subtracted from
-    totalCrumbs, because there's no need to adjust the last crumb width as the
-    overflow:hidden will handle it
+    run the method after load to set the crumb widths correctly
     ###
-    windowResize = ->
-      for crumb in [1 .. totalCrumbs - 1] by 1
-        updateCrumb crumb, infowrapBreadcrumbsObj.width()
+    windowResize()
 
     ###
     run the above method on every fire of window resize
     ###
     $(window).resize -> windowResize()
-
-    ###
-    run the method after load to set the crumb widths correctly
-    ###
-    windowResize()
 
     ###
     maintain chainability -- coming soon!
@@ -326,13 +342,6 @@ self-invoking anonymous wrapper, which imports jquery on last line
     return this.each ->
       new $.fn.infowrapBreadcrumbs $(this), options
     ###
-
-  ###
-  refresh crumbs
-  needing for data binding and dom updates
-  this just reinitializes the crumbs to ensure accuracy
-  ###
-  $.fn.infowrapBreadcrumbs.refresh = initCrumbs
 
   ###
   the default options for the plugin assigned per jquery plugin spec
