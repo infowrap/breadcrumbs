@@ -27,7 +27,44 @@ self-invoking anonymous wrapper, which imports jquery on last line
       */
 
       $.fn.infowrapBreadcrumbs = function(options) {
-        var crumbsObj, infowrapBreadcrumbsObj, initCrumbs, maxCollapsedCrumbs, minWidth, shaderAntumbra, shaderWidth, updateCrumb, windowResize;
+        /*
+        save this as a variable so it isn't lost or confused with another this
+        */
+
+        var collapsedCrumb, crumbObjs, crumbWidths, crumbsObj, expandedCrumb, infowrapBreadcrumbsObj, initCrumbs, maxCollapsedCrumbs, minWidth, shaderAntumbra, shaderObjs, shaderWidth, totalCrumbs, updateCrumb, windowResize;
+        infowrapBreadcrumbsObj = this;
+        /*
+        cache the .crumbs to an object for later use
+        */
+
+        crumbsObj = infowrapBreadcrumbsObj.find(".crumbs");
+        /*
+        allowing formal options overrides to be respected
+        
+        now that we have defined your default values, we can manually override them
+        by manipulating them outside the jquery plugin. these changes to the default
+        values will be implemented on all subsequent uses of the jquery plugin.
+        
+        if i want to override one of the default values used for future instances of
+        a plugin, i would write code like the following:
+        
+        $.fn.infowrapBreadcrumbs.defaultOptions.minWidth = 50;
+        $('#helloWorld').infowrapBreadcrumbs();
+        $('#goodbyeWorld').infowrapBreadcrumbs();
+        */
+
+        options = $.extend({}, $.fn.infowrapBreadcrumbs.defaultOptions, options);
+        /*
+        globalizing the variables for the method, so if we have to make a change to
+        the varable on its way in, we have a place to address that potential
+        */
+
+        maxCollapsedCrumbs = options.maxCollapsedCrumbs - 1;
+        minWidth = options.minWidth;
+        shaderWidth = options.shaderWidth;
+        shaderAntumbra = options.shaderAntumbra;
+        collapsedCrumb = expandedCrumb = totalCrumbs = 0;
+        crumbWidths = crumbObjs = shaderObjs = [];
         initCrumbs = function() {
           /*
           the nth crumb that is collapsed counting from the left, and the nth crumb
@@ -36,7 +73,6 @@ self-invoking anonymous wrapper, which imports jquery on last line
           screen and all are collapsed
           */
 
-          var collapsedCrumb, crumbObjs, crumbWidths, expandedCrumb, shaderObjs, totalCrumbs;
           collapsedCrumb = 0;
           expandedCrumb = 0;
           /*
@@ -119,7 +155,7 @@ self-invoking anonymous wrapper, which imports jquery on last line
           for easy reference
           */
 
-          var afterCrumb, beforeCrumb, collapsedCrumb, crumbObj, crumbWidth, crumbWidthDiff, crumbsLeft, expandedCrumb, i, nextCrumbObj, nextCrumbWidth, shaderObj, shaderX, _i, _ref;
+          var afterCrumb, beforeCrumb, crumbObj, crumbWidth, crumbWidthDiff, crumbsLeft, i, nextCrumbObj, nextCrumbWidth, shaderObj, shaderX, _i, _ref;
           crumbWidth = crumbWidths[crumb];
           /*
           the natural width of the next crumb when fully expanded. added as a
@@ -287,42 +323,6 @@ self-invoking anonymous wrapper, which imports jquery on last line
           */
 
           initCrumbs();
-        } else {
-          /*
-          save this as a variable so it isn't lost or confused with another this
-          */
-
-          infowrapBreadcrumbsObj = this;
-          /*
-          cache the .crumbs to an object for later use
-          */
-
-          crumbsObj = infowrapBreadcrumbsObj.find(".crumbs");
-          /*
-          allowing formal options overrides to be respected
-          
-          now that we have defined your default values, we can manually override them
-          by manipulating them outside the jquery plugin. these changes to the default
-          values will be implemented on all subsequent uses of the jquery plugin.
-          
-          if i want to override one of the default values used for future instances of
-          a plugin, i would write code like the following:
-          
-          $.fn.infowrapBreadcrumbs.defaultOptions.minWidth = 50;
-          $('#helloWorld').infowrapBreadcrumbs();
-          $('#goodbyeWorld').infowrapBreadcrumbs();
-          */
-
-          options = $.extend({}, $.fn.infowrapBreadcrumbs.defaultOptions, options);
-          /*
-          globalizing the variables for the method, so if we have to make a change to
-          the varable on its way in, we have a place to address that potential
-          */
-
-          maxCollapsedCrumbs = options.maxCollapsedCrumbs - 1;
-          minWidth = options.minWidth;
-          shaderWidth = options.shaderWidth;
-          shaderAntumbra = options.shaderAntumbra;
         }
         /*
         windowResize is a set of operations used in a couple of places, it has been
