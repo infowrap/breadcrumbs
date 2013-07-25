@@ -25,41 +25,6 @@ self-invoking anonymous wrapper, which imports jquery on last line
   ###
   $.fn.infowrapBreadcrumbs = (options) ->
 
-    ###
-    save this as a variable so it isn't lost or confused with another this
-    ###
-    infowrapBreadcrumbsObj = this
-
-    ###
-    cache the .crumbs to an object for later use
-    ###
-    crumbsObj = infowrapBreadcrumbsObj.find ".crumbs"
-
-    ###
-    allowing formal options overrides to be respected
-
-    now that we have defined your default values, we can manually override them
-    by manipulating them outside the jquery plugin. these changes to the default
-    values will be implemented on all subsequent uses of the jquery plugin.
-
-    if i want to override one of the default values used for future instances of
-    a plugin, i would write code like the following:
-
-    $.fn.infowrapBreadcrumbs.defaultOptions.minWidth = 50;
-    $('#helloWorld').infowrapBreadcrumbs();
-    $('#goodbyeWorld').infowrapBreadcrumbs();
-    ###
-    options = $.extend {}, $.fn.infowrapBreadcrumbs.defaultOptions, options
-
-    ###
-    globalizing the variables for the method, so if we have to make a change to
-    the varable on its way in, we have a place to address that potential
-    ###
-    maxCollapsedCrumbs = options.maxCollapsedCrumbs - 1
-    minWidth = options.minWidth
-    shaderWidth = options.shaderWidth
-    shaderAntumbra = options.shaderAntumbra
-
     initCrumbs = () ->
       ###
       the nth crumb that is collapsed counting from the left, and the nth crumb
@@ -291,10 +256,49 @@ self-invoking anonymous wrapper, which imports jquery on last line
         ###
         shaderObj.css "right", -shaderWidth - shaderAntumbra
 
-    ###
-    INITIALIZE
-    ###
-    initCrumbs()
+    if options is 'refresh'
+      ###
+      refresh crumbs
+      data binding and dom updates
+      this reinitializes the crumbs to ensure accuracy
+      ###
+      initCrumbs()
+
+    else
+      ###
+      save this as a variable so it isn't lost or confused with another this
+      ###
+      infowrapBreadcrumbsObj = this
+
+      ###
+      cache the .crumbs to an object for later use
+      ###
+      crumbsObj = infowrapBreadcrumbsObj.find ".crumbs"
+
+      ###
+      allowing formal options overrides to be respected
+
+      now that we have defined your default values, we can manually override them
+      by manipulating them outside the jquery plugin. these changes to the default
+      values will be implemented on all subsequent uses of the jquery plugin.
+
+      if i want to override one of the default values used for future instances of
+      a plugin, i would write code like the following:
+
+      $.fn.infowrapBreadcrumbs.defaultOptions.minWidth = 50;
+      $('#helloWorld').infowrapBreadcrumbs();
+      $('#goodbyeWorld').infowrapBreadcrumbs();
+      ###
+      options = $.extend {}, $.fn.infowrapBreadcrumbs.defaultOptions, options
+
+      ###
+      globalizing the variables for the method, so if we have to make a change to
+      the varable on its way in, we have a place to address that potential
+      ###
+      maxCollapsedCrumbs = options.maxCollapsedCrumbs - 1
+      minWidth = options.minWidth
+      shaderWidth = options.shaderWidth
+      shaderAntumbra = options.shaderAntumbra
 
     ###
     windowResize is a set of operations used in a couple of places, it has been
@@ -308,14 +312,18 @@ self-invoking anonymous wrapper, which imports jquery on last line
         updateCrumb crumb, infowrapBreadcrumbsObj.width()
 
     ###
-    run the above method on every fire of window resize
+    INITIALIZE
     ###
-    $(window).resize -> windowResize()
-
+    initCrumbs()
     ###
     run the method after load to set the crumb widths correctly
     ###
     windowResize()
+
+    ###
+    run the above method on every fire of window resize
+    ###
+    $(window).resize -> windowResize()
 
     ###
     maintain chainability -- coming soon!
@@ -326,13 +334,6 @@ self-invoking anonymous wrapper, which imports jquery on last line
     return this.each ->
       new $.fn.infowrapBreadcrumbs $(this), options
     ###
-
-  ###
-  refresh crumbs
-  needing for data binding and dom updates
-  this just reinitializes the crumbs to ensure accuracy
-  ###
-  $.fn.infowrapBreadcrumbs.refresh = initCrumbs
 
   ###
   the default options for the plugin assigned per jquery plugin spec
