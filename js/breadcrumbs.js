@@ -31,7 +31,7 @@ self-invoking anonymous wrapper, which imports jquery on last line
         save this as a variable so it isn't lost or confused with another this
         */
 
-        var collapsedCrumb, crumbObjs, crumbWidths, crumbsObj, expandedCrumb, infowrapBreadcrumbsObj, initCrumbs, maxCollapsedCrumbs, minWidth, shaderAntumbra, shaderObjs, shaderWidth, totalCrumbs, updateCrumb, windowResize;
+        var bcOptions, collapsedCrumb, crumbObjs, crumbWidths, crumbsObj, expandedCrumb, infowrapBreadcrumbsObj, initCrumbs, maxCollapsedCrumbs, minWidth, shaderAntumbra, shaderObjs, shaderWidth, totalCrumbs, updateCrumb, windowResize;
         infowrapBreadcrumbsObj = this;
         /*
         cache the .crumbs to an object for later use
@@ -53,16 +53,16 @@ self-invoking anonymous wrapper, which imports jquery on last line
         $('#goodbyeWorld').infowrapBreadcrumbs();
         */
 
-        options = $.extend({}, $.fn.infowrapBreadcrumbs.defaultOptions, options);
+        bcOptions = $.extend({}, $.fn.infowrapBreadcrumbs.defaultOptions, options);
         /*
         globalizing the variables for the method, so if we have to make a change to
         the varable on its way in, we have a place to address that potential
         */
 
-        maxCollapsedCrumbs = options.maxCollapsedCrumbs - 1;
-        minWidth = options.minWidth;
-        shaderWidth = options.shaderWidth;
-        shaderAntumbra = options.shaderAntumbra;
+        maxCollapsedCrumbs = bcOptions.maxCollapsedCrumbs - 1;
+        minWidth = bcOptions.minWidth;
+        shaderWidth = bcOptions.shaderWidth;
+        shaderAntumbra = bcOptions.shaderAntumbra;
         collapsedCrumb = expandedCrumb = totalCrumbs = 0;
         crumbWidths = crumbObjs = shaderObjs = [];
         initCrumbs = function() {
@@ -117,6 +117,13 @@ self-invoking anonymous wrapper, which imports jquery on last line
 
             crumbObjs[index + 1] = crumbObj;
             /*
+            ensure attr is removed
+            this function is called on refresh so some crumbs may have it
+            */
+
+            crumbObj.removeAttr("data-collapsed");
+            crumbObj.removeAttr("style");
+            /*
             add the shader div, which is a moving piece. would like to add with
             :after, but currently it cant be manipulated in jquery. triple quotes
             used so the html can be typed naturally
@@ -141,6 +148,22 @@ self-invoking anonymous wrapper, which imports jquery on last line
 
             return totalCrumbs++;
           });
+        };
+        /*
+        windowResize is a set of operations used in a couple of places, it has been
+        added as a method to call on load and on resize. when the user resizes the
+        page, run the updateCrumb method on each crumb. One is subtracted from
+        totalCrumbs, because there's no need to adjust the last crumb width as the
+        overflow:hidden will handle it
+        */
+
+        windowResize = function() {
+          var crumb, _i, _ref, _results;
+          _results = [];
+          for (crumb = _i = 1, _ref = totalCrumbs - 1; _i <= _ref; crumb = _i += 1) {
+            _results.push(updateCrumb(crumb, infowrapBreadcrumbsObj.width()));
+          }
+          return _results;
         };
         /*
         method to run on each crumb to define its width against the other crumbs
@@ -323,23 +346,8 @@ self-invoking anonymous wrapper, which imports jquery on last line
           */
 
           initCrumbs();
+          windowResize();
         }
-        /*
-        windowResize is a set of operations used in a couple of places, it has been
-        added as a method to call on load and on resize. when the user resizes the
-        page, run the updateCrumb method on each crumb. One is subtracted from
-        totalCrumbs, because there's no need to adjust the last crumb width as the
-        overflow:hidden will handle it
-        */
-
-        windowResize = function() {
-          var crumb, _i, _ref, _results;
-          _results = [];
-          for (crumb = _i = 1, _ref = totalCrumbs - 1; _i <= _ref; crumb = _i += 1) {
-            _results.push(updateCrumb(crumb, infowrapBreadcrumbsObj.width()));
-          }
-          return _results;
-        };
         /*
         INITIALIZE
         */
