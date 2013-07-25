@@ -31,7 +31,7 @@ self-invoking anonymous wrapper, which imports jquery on last line
         save this as a variable so it isn't lost or confused with another this
         */
 
-        var collapsedCrumb, crumbObjs, crumbWidths, crumbsObj, expandedCrumb, infowrapBreadcrumbsObj, maxCollapsedCrumbs, minWidth, shaderAntumbra, shaderObjs, shaderWidth, totalCrumbs, updateCrumb, windowResize;
+        var crumbsObj, infowrapBreadcrumbsObj, initCrumbs, maxCollapsedCrumbs, minWidth, shaderAntumbra, shaderWidth, updateCrumb, windowResize;
         infowrapBreadcrumbsObj = this;
         /*
         cache the .crumbs to an object for later use
@@ -63,79 +63,84 @@ self-invoking anonymous wrapper, which imports jquery on last line
         minWidth = options.minWidth;
         shaderWidth = options.shaderWidth;
         shaderAntumbra = options.shaderAntumbra;
-        /*
-        the nth crumb that is collapsed counting from the left, and the nth crumb
-        that is expanded counting from the left. the expanded crumb is only detected
-        if no collapsed crumb is found. this prevents an error when on a small
-        screen and all are collapsed
-        */
-
-        collapsedCrumb = 0;
-        expandedCrumb = 0;
-        /*
-        the total number of crumbs
-        if 3, then it should be 3
-        */
-
-        totalCrumbs = 0;
-        /*
-        iterating thru the crumbs, this will say what the current width of each
-        crumb would be if fully expanded. the crumbs width as it lies before being
-        compressed
-        */
-
-        crumbWidths = [];
-        /*
-        store each crumb object in an object for later reference. otherwise you'll
-        need to perform an expensive `find`
-        */
-
-        crumbObjs = [];
-        /*
-        store each crumb .shader object in an object for later reference. otherwise
-        you'll need to perform an expensive `find`
-        */
-
-        shaderObjs = [];
-        /*
-        loop thru each crumb
-        */
-
-        crumbsObj.find(".crumb").each(function(index, value) {
+        initCrumbs = function() {
           /*
-          define the crumb object as its used more than once
+          the nth crumb that is collapsed counting from the left, and the nth crumb
+          that is expanded counting from the left. the expanded crumb is only detected
+          if no collapsed crumb is found. this prevents an error when on a small
+          screen and all are collapsed
           */
 
-          var crumbObj;
-          crumbObj = $(this);
+          var collapsedCrumb, crumbObjs, crumbWidths, expandedCrumb, shaderObjs, totalCrumbs;
+          collapsedCrumb = 0;
+          expandedCrumb = 0;
           /*
-          cache the crumb to an objects for later use
+          the total number of crumbs
+          if 3, then it should be 3
           */
 
-          crumbObjs[index + 1] = crumbObj;
+          totalCrumbs = 0;
           /*
-          add the shader div, which is a moving piece. would like to add with
-          :after, but currently it cant be manipulated in jquery. triple quotes
-          used so the html can be typed naturally
+          iterating thru the crumbs, this will say what the current width of each
+          crumb would be if fully expanded. the crumbs width as it lies before being
+          compressed
           */
 
-          crumbObj.append("<div class=\"shader\"></div>");
+          crumbWidths = [];
           /*
-          cache the shadow of the crumb to a unique object for later use
+          store each crumb object in an object for later reference. otherwise you'll
+          need to perform an expensive `find`
           */
 
-          shaderObjs[index + 1] = crumbObj.find(".shader");
+          crumbObjs = [];
           /*
-          the outer width of each crumb (width and padding, margin, etc)
+          store each crumb .shader object in an object for later reference. otherwise
+          you'll need to perform an expensive `find`
           */
 
-          crumbWidths[index + 1] = crumbObj.outerWidth();
+          shaderObjs = [];
           /*
-          +1 to total number of crumbs
+          loop thru each crumb
           */
 
-          return totalCrumbs++;
-        });
+          return crumbsObj.find(".crumb").each(function(index, value) {
+            /*
+            define the crumb object as its used more than once
+            */
+
+            var crumbObj;
+            crumbObj = $(this);
+            /*
+            cache the crumb to an objects for later use
+            */
+
+            crumbObjs[index + 1] = crumbObj;
+            /*
+            add the shader div, which is a moving piece. would like to add with
+            :after, but currently it cant be manipulated in jquery. triple quotes
+            used so the html can be typed naturally
+            */
+
+            if (!crumbObj.find('.shader').length) {
+              crumbObj.append("<div class=\"shader\"></div>");
+            }
+            /*
+            cache the shadow of the crumb to a unique object for later use
+            */
+
+            shaderObjs[index + 1] = crumbObj.find(".shader");
+            /*
+            the outer width of each crumb (width and padding, margin, etc)
+            */
+
+            crumbWidths[index + 1] = crumbObj.outerWidth();
+            /*
+            +1 to total number of crumbs
+            */
+
+            return totalCrumbs++;
+          });
+        };
         /*
         method to run on each crumb to define its width against the other crumbs
         and against the whole breadcrumbs bar. accepts the inputs of an integer
@@ -149,7 +154,7 @@ self-invoking anonymous wrapper, which imports jquery on last line
           for easy reference
           */
 
-          var afterCrumb, beforeCrumb, crumbObj, crumbWidth, crumbWidthDiff, crumbsLeft, i, nextCrumbObj, nextCrumbWidth, shaderObj, shaderX, _i, _ref;
+          var afterCrumb, beforeCrumb, collapsedCrumb, crumbObj, crumbWidth, crumbWidthDiff, crumbsLeft, expandedCrumb, i, nextCrumbObj, nextCrumbWidth, shaderObj, shaderX, _i, _ref;
           crumbWidth = crumbWidths[crumb];
           /*
           the natural width of the next crumb when fully expanded. added as a
@@ -310,6 +315,11 @@ self-invoking anonymous wrapper, which imports jquery on last line
           }
         };
         /*
+        INITIALIZE
+        */
+
+        initCrumbs();
+        /*
         windowResize is a set of operations used in a couple of places, it has been
         added as a method to call on load and on resize. when the user resizes the
         page, run the updateCrumb method on each crumb. One is subtracted from
@@ -348,6 +358,13 @@ self-invoking anonymous wrapper, which imports jquery on last line
         */
 
       };
+      /*
+      refresh crumbs
+      needing for data binding and dom updates
+      this just reinitializes the crumbs to ensure accuracy
+      */
+
+      $.fn.infowrapBreadcrumbs.refresh = initCrumbs;
       /*
       the default options for the plugin assigned per jquery plugin spec
       */
