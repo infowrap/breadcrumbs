@@ -7,9 +7,14 @@ Example usage
 
   optional settings passed in as an object
   see descriptions below in defaultOptions
+  options =
     minWidth: 30
     shaderWidth: 44
     shaderAntumbra: 20
+  $(".infowrap-breadcrumbs").infowrapBreadcrumbs(options)
+
+  you can also refresh the crumbs when the DOM dynamically updates
+  $(".infowrap-breadcrumbs").infowrapBreadcrumbs('refresh')
 
 some text pulled from http://msdn.microsoft.com/en-us/magazine/ff608209.aspx
 
