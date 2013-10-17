@@ -2,6 +2,12 @@
 
 An easy way to expand or collapse menu items, especially when there are many levels like in folder navigation.
 
+## To see
+
+*Python prerequisite*
+
+    sh start.sh
+
 ## To use
 
 Add jQuery and then ..
@@ -16,6 +22,10 @@ Options ..
     maxCollapsedCrumbs: 3
 
     // the minimum width of a crumb when collapsed
+    // - must be divisible by 2
+    // - you must adjust the css for this to take effect.
+    //   side padding of `.crumb` needs to be half of `minwidth`
+    //   `.crumb { padding: 0 15px }`
     minWidth: 30
 
     // width of the shader block that is hidden in pixels. it is in the crumb
