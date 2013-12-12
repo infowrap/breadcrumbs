@@ -55,6 +55,8 @@ self-invoking anonymous wrapper, which imports jquery on last line
     ###
     bcOptions = $.extend {}, $.fn.infowrapBreadcrumbs.defaultOptions, options
 
+    console.log bcOptions.tabWidth
+
     ###
     globalizing the variables for the method, so if we have to make a change to
     the varable on its way in, we have a place to address that potential
