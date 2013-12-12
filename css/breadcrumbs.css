@@ -35,7 +35,6 @@
   position: relative;
   overflow: hidden;
   white-space: nowrap;
-  max-width: 100px;
 }
 .infowrap-breadcrumbs .crumbs .crumb:last-child {
   background-color: transparent;
