@@ -63,6 +63,8 @@ self-invoking anonymous wrapper, which imports jquery on last line
     minWidth = bcOptions.minWidth
     shaderWidth = bcOptions.shaderWidth
     shaderAntumbra = bcOptions.shaderAntumbra
+    allowVariableWidths = bcOptions.allowVariableWidths
+    tabWidth = bcOptions.tabWidth
     collapsedCrumb = expandedCrumb = totalCrumbs = 0
     crumbWidths = crumbObjs = shaderObjs = []
 
@@ -140,8 +142,10 @@ self-invoking anonymous wrapper, which imports jquery on last line
         ###
         the outer width of each crumb (width and padding, margin, etc)
         ###
-        crumbWidths[index + 1] = crumbObj.outerWidth()
-
+        if allowVariableWidths
+          crumbWidths[index + 1] = crumbObj.outerWidth()
+        else
+          crumbWidths[index + 1] = tabWidth
         ###
         +1 to total number of crumbs
         ###
@@ -204,6 +208,9 @@ self-invoking anonymous wrapper, which imports jquery on last line
       ###
       crumbObj = crumbObjs[crumb]
 
+
+      crumbWidthCurrently = crumbObj.outerWidth()
+
       ###
       we'll be doing an extra check on the crumb after the current one. if there
       is one, lets refernce it, otherwise null it out
@@ -218,6 +225,19 @@ self-invoking anonymous wrapper, which imports jquery on last line
       ###
       shaderObj = shaderObjs[crumb]
 
+
+      if crumbWidthCurrently < crumbWidth
+        crumbObj.attr "data-expanded", false
+      else
+        crumbObj.attr "data-expanded", true
+
+      #if crumbWidthCurrently == minWidth
+      #  crumbObj.attr "data-collapsed", true
+      #else
+      #  crumbObj.attr "data-collapsed", true
+
+
+
       ###
       if the breadcrumbs width is less than what the width is before, after, and
       including the width of this crumb, then we'll need to start collapsing a
@@ -228,7 +248,10 @@ self-invoking anonymous wrapper, which imports jquery on last line
         ###
         set the crumb width to our new determined (by diff) width
         ###
-        crumbObj.outerWidth crumbWidthDiff
+        if allowVariableWidths
+          crumbObj.outerWidth crumbWidthDiff
+        else
+          crumbObj.outerWidth minWidth
 
         ###
         if the maxCollapsedCrumbs is set, then lets make it happen
@@ -361,7 +384,7 @@ self-invoking anonymous wrapper, which imports jquery on last line
     ###
     the minimum width of a crumb when collapsed
     ###
-    minWidth: 30
+    minWidth: 44
 
     ###
     width of the shader block that is hidden in pixels. it is in the crumb
@@ -373,6 +396,16 @@ self-invoking anonymous wrapper, which imports jquery on last line
     the distance of your css shadow antumbra in pixels
     ###
     shaderAntumbra: 25
+
+    ###
+    allow variable widths for crumbs or only show as expanded/collapsed
+    ###
+    allowVariableWidths: false
+
+    ###
+    the width of a tab when expanded
+    ###
+    tabWidth: 150
 
 ###
 import jquery into the self-invoking anonymous wrapper
