@@ -5,7 +5,7 @@
 
 .infowrap-breadcrumbs {
   color: #fff;
-  background-color: orange;
+  background-color: darken(orange, 10%);
   overflow: hidden;
   position: relative;
   height: @base;
@@ -21,6 +21,7 @@
     overflow: hidden;
 
     .crumb {
+      background-color: lighten(orange, 10%);
       line-height: @base;
       padding: 0 round(@base * .333); // needs to be communicated to JS
       float: left;
@@ -28,12 +29,19 @@
       position: relative;
       overflow: hidden;
       white-space: nowrap;
+      max-width: 100px;
 
       &:last-child {
+        background-color: transparent;
+        overflow: visible;
 
         .shader {
           box-shadow: none;
         }
+      }
+
+      &[data-collapsed="false"][data-expanded="false"] {
+        //border: solid 2px red;
       }
 
       .shader {

@@ -1,6 +1,6 @@
 .infowrap-breadcrumbs {
   color: #fff;
-  background-color: orange;
+  background-color: #cc8400;
   overflow: hidden;
   position: relative;
   height: 44px;
@@ -27,6 +27,7 @@
   clear: both;
 }
 .infowrap-breadcrumbs .crumbs .crumb {
+  background-color: #ffb733;
   line-height: 44px;
   padding: 0 15px;
   float: left;
@@ -34,6 +35,11 @@
   position: relative;
   overflow: hidden;
   white-space: nowrap;
+  max-width: 100px;
+}
+.infowrap-breadcrumbs .crumbs .crumb:last-child {
+  background-color: transparent;
+  overflow: visible;
 }
 .infowrap-breadcrumbs .crumbs .crumb:last-child .shader {
   box-shadow: none;

@@ -6,9 +6,14 @@ Example usage
 
   optional settings passed in as an object
   see descriptions below in defaultOptions
+  options =
     minWidth: 30
     shaderWidth: 44
     shaderAntumbra: 20
+  $(".infowrap-breadcrumbs").infowrapBreadcrumbs(options)
+
+  you can also refresh the crumbs when the DOM dynamically updates
+  $(".infowrap-breadcrumbs").infowrapBreadcrumbs('refresh')
 
 some text pulled from http://msdn.microsoft.com/en-us/magazine/ff608209.aspx
 */
@@ -31,7 +36,7 @@ self-invoking anonymous wrapper, which imports jquery on last line
         save this as a variable so it isn't lost or confused with another this
         */
 
-        var bcOptions, collapsedCrumb, crumbObjs, crumbWidths, crumbsObj, expandedCrumb, infowrapBreadcrumbsObj, initCrumbs, maxCollapsedCrumbs, minWidth, shaderAntumbra, shaderObjs, shaderWidth, totalCrumbs, updateCrumb, windowResize;
+        var allowVariableWidths, bcOptions, collapsedCrumb, crumbObjs, crumbWidths, crumbsObj, expandedCrumb, infowrapBreadcrumbsObj, initCrumbs, maxCollapsedCrumbs, minWidth, shaderAntumbra, shaderObjs, shaderWidth, tabWidth, totalCrumbs, updateCrumb, windowResize;
         infowrapBreadcrumbsObj = this;
         /*
         cache the .crumbs to an object for later use
@@ -63,6 +68,8 @@ self-invoking anonymous wrapper, which imports jquery on last line
         minWidth = bcOptions.minWidth;
         shaderWidth = bcOptions.shaderWidth;
         shaderAntumbra = bcOptions.shaderAntumbra;
+        allowVariableWidths = bcOptions.allowVariableWidths;
+        tabWidth = bcOptions.tabWidth;
         collapsedCrumb = expandedCrumb = totalCrumbs = 0;
         crumbWidths = crumbObjs = shaderObjs = [];
         initCrumbs = function() {
@@ -141,7 +148,11 @@ self-invoking anonymous wrapper, which imports jquery on last line
             the outer width of each crumb (width and padding, margin, etc)
             */
 
-            crumbWidths[index + 1] = crumbObj.outerWidth();
+            if (allowVariableWidths) {
+              crumbWidths[index + 1] = crumbObj.outerWidth();
+            } else {
+              crumbWidths[index + 1] = tabWidth;
+            }
             /*
             +1 to total number of crumbs
             */
@@ -178,7 +189,7 @@ self-invoking anonymous wrapper, which imports jquery on last line
           for easy reference
           */
 
-          var afterCrumb, beforeCrumb, crumbObj, crumbWidth, crumbWidthDiff, crumbsLeft, i, nextCrumbObj, nextCrumbWidth, shaderObj, shaderX, _i, _ref;
+          var afterCrumb, beforeCrumb, crumbObj, crumbWidth, crumbWidthCurrently, crumbWidthDiff, crumbsLeft, i, nextCrumbObj, nextCrumbWidth, shaderObj, shaderX, _i, _ref;
           crumbWidth = crumbWidths[crumb];
           /*
           the natural width of the next crumb when fully expanded. added as a
@@ -214,6 +225,7 @@ self-invoking anonymous wrapper, which imports jquery on last line
           */
 
           crumbObj = crumbObjs[crumb];
+          crumbWidthCurrently = crumbObj.outerWidth();
           /*
           we'll be doing an extra check on the crumb after the current one. if there
           is one, lets refernce it, otherwise null it out
@@ -229,6 +241,11 @@ self-invoking anonymous wrapper, which imports jquery on last line
           */
 
           shaderObj = shaderObjs[crumb];
+          if (crumbWidthCurrently < crumbWidth) {
+            crumbObj.attr("data-expanded", false);
+          } else {
+            crumbObj.attr("data-expanded", true);
+          }
           /*
           if the breadcrumbs width is less than what the width is before, after, and
           including the width of this crumb, then we'll need to start collapsing a
@@ -240,7 +257,11 @@ self-invoking anonymous wrapper, which imports jquery on last line
             set the crumb width to our new determined (by diff) width
             */
 
-            crumbObj.outerWidth(crumbWidthDiff);
+            if (allowVariableWidths) {
+              crumbObj.outerWidth(crumbWidthDiff);
+            } else {
+              crumbObj.outerWidth(minWidth);
+            }
             /*
             if the maxCollapsedCrumbs is set, then lets make it happen
             */
@@ -390,7 +411,7 @@ self-invoking anonymous wrapper, which imports jquery on last line
         the minimum width of a crumb when collapsed
         */
 
-        minWidth: 30,
+        minWidth: 44,
         /*
         width of the shader block that is hidden in pixels. it is in the crumb
         object, but is pushed far right and hidden by the crumb's `overflow: hidden`
@@ -401,7 +422,17 @@ self-invoking anonymous wrapper, which imports jquery on last line
         the distance of your css shadow antumbra in pixels
         */
 
-        shaderAntumbra: 25
+        shaderAntumbra: 25,
+        /*
+        allow variable widths for crumbs or only show as expanded/collapsed
+        */
+
+        allowVariableWidths: false,
+        /*
+        the width of a tab when expanded
+        */
+
+        tabWidth: 150
       };
     };
     /*
