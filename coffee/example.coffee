@@ -3,11 +3,10 @@ $(window).load ->
 
   # Basic
   $(".infowrap-breadcrumbs").infowrapBreadcrumbs
-    tabWidth: 500
+    tabWidth: 150
+    minWidth: 44
+    maxCollapsedCrumbs:3
 
-  $(".infowrap-breadcrumbs").refresh()
-
-  # With params
-  # in this example, the css needs to have .crumbs padding be "0 22px"
-  #$(".infowrap-breadcrumbs").infowrapBreadcrumbs minWidth: 44
+  # Call refresh anytime the crumbs markup in the DOM changes dynamically
+  $(".infowrap-breadcrumbs").infowrapBreadcrumbs('refresh')
 
