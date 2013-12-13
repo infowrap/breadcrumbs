@@ -17,6 +17,9 @@ Example usage
   you can also refresh the crumbs when the DOM dynamically updates
   $(".infowrap-breadcrumbs").infowrapBreadcrumbs('refresh')
 
+  you can further modify options at anytime by combining refresh with options
+  $(".infowrap-breadcrumbs").infowrapBreadcrumbs('refresh', {minWidth:44})
+
 some text pulled from http://msdn.microsoft.com/en-us/magazine/ff608209.aspx
 
 ###
@@ -26,52 +29,61 @@ self-invoking anonymous wrapper, which imports jquery on last line
 ###
 (($) ->
 
+  infowrapBreadcrumbsObj = crumbsObj = undefined
+  crumbOptions =
+    maxCollapsedCrumbs:3
+    minWidth:44
+    shaderWidth:44
+    shaderAntumbra:25
+    allowVariableWidths:false
+    tabWidth:150
+
+    ###
+    the nth crumb that is collapsed counting from the left, and the nth crumb
+    that is expanded counting from the left. the expanded crumb is only detected
+    if no collapsed crumb is found. this prevents an error when on a small
+    screen and all are collapsed
+    ###
+    collapsedCrumb:0
+    expandedCrumb:0
+
+    ###
+    the total number of crumbs
+    if 3, then it should be 3
+    ###
+    totalCrumbs:0
+
+    ###
+    iterating thru the crumbs, this will say what the current width of each
+    crumb would be if fully expanded. the crumbs width as it lies before being
+    compressed
+    ###
+    crumbWidths:[]
+
+    ###
+    store each crumb object in an object for later reference. otherwise you'll
+    need to perform an expensive `find`
+    ###
+    crumbObjs:[]
+
+    ###
+    store each crumb .shader object in an object for later reference. otherwise
+    you'll need to perform an expensive `find`
+    ###
+    shaderObjs:[]
+
   methods =
 
-    build: ->
+    build: (element, options) ->
 
-      infowrapBreadcrumbsObj = this
+      infowrapBreadcrumbsObj = element
       crumbsObj = infowrapBreadcrumbsObj.find ".crumbs"
-      maxCollapsedCrumbs: 3
-      minWidth: 44
-      shaderWidth: 44
-      shaderAntumbra: 25
-      allowVariableWidths: false
-      tabWidth: 150
+      # always reset total crumbs when building
+      crumbOptions.totalCrumbs = 0
 
-      ###
-      the nth crumb that is collapsed counting from the left, and the nth crumb
-      that is expanded counting from the left. the expanded crumb is only detected
-      if no collapsed crumb is found. this prevents an error when on a small
-      screen and all are collapsed
-      ###
-      collapsedCrumb = 0
-      expandedCrumb = 0
-
-      ###
-      the total number of crumbs
-      if 3, then it should be 3
-      ###
-      totalCrumbs = 0
-
-      ###
-      iterating thru the crumbs, this will say what the current width of each
-      crumb would be if fully expanded. the crumbs width as it lies before being
-      compressed
-      ###
-      crumbWidths = []
-
-      ###
-      store each crumb object in an object for later reference. otherwise you'll
-      need to perform an expensive `find`
-      ###
-      crumbObjs = []
-
-      ###
-      store each crumb .shader object in an object for later reference. otherwise
-      you'll need to perform an expensive `find`
-      ###
-      shaderObjs = []
+      if typeof options is 'object'
+        # merge options onto defaults
+        $.extend crumbOptions, options
 
       ###
       loop thru each crumb
@@ -86,7 +98,7 @@ self-invoking anonymous wrapper, which imports jquery on last line
         ###
         cache the crumb to an objects for later use
         ###
-        crumbObjs[index + 1] = crumbObj
+        crumbOptions.crumbObjs[index + 1] = crumbObj
 
         ###
         ensure attr is removed
@@ -107,19 +119,19 @@ self-invoking anonymous wrapper, which imports jquery on last line
         ###
         cache the shadow of the crumb to a unique object for later use
         ###
-        shaderObjs[index + 1] = crumbObj.find ".shader"
+        crumbOptions.shaderObjs[index + 1] = crumbObj.find ".shader"
 
         ###
         the outer width of each crumb (width and padding, margin, etc)
         ###
-        if allowVariableWidths
-          crumbWidths[index + 1] = crumbObj.outerWidth()
+        if crumbOptions.allowVariableWidths
+          crumbOptions.crumbWidths[index + 1] = crumbObj.outerWidth()
         else
-          crumbWidths[index + 1] = tabWidth
+          crumbOptions.crumbWidths[index + 1] = crumbOptions.tabWidth
         ###
         +1 to total number of crumbs
         ###
-        totalCrumbs++
+        crumbOptions.totalCrumbs++
 
     windowResize: ->
       ###
@@ -129,8 +141,8 @@ self-invoking anonymous wrapper, which imports jquery on last line
       totalCrumbs, because there's no need to adjust the last crumb width as the
       overflow:hidden will handle it
       ###
-      for crumb in [1 .. totalCrumbs - 1] by 1
-        updateCrumb crumb, infowrapBreadcrumbsObj.width()
+      for crumb in [1 .. crumbOptions.totalCrumbs - 1] by 1
+        methods.updateCrumb crumb, infowrapBreadcrumbsObj.width()
 
     updateCrumb: (crumb, breadcrumbsWidth) ->
       ###
@@ -144,13 +156,13 @@ self-invoking anonymous wrapper, which imports jquery on last line
       the natural width of the crumb when fully expanded. added as a variable
       for easy reference
       ###
-      crumbWidth = crumbWidths[crumb]
+      crumbWidth = crumbOptions.crumbWidths[crumb]
 
       ###
       the natural width of the next crumb when fully expanded. added as a
       variable for easy reference
       ###
-      nextCrumbWidth = crumbWidths[crumb + 1]
+      nextCrumbWidth = crumbOptions.crumbWidths[crumb + 1]
 
       ###
       determine how much with there is before the current crumb. this is
@@ -158,14 +170,14 @@ self-invoking anonymous wrapper, which imports jquery on last line
       assumes that every crumbe before current crumb is collapsed
       ###
       beforeCrumb = 0
-      beforeCrumb = minWidth * (crumb - 1)
+      beforeCrumb = crumbOptions.minWidth * (crumb - 1)
 
       ###
       determine how much with there is after the current crumb by iterating
       over all the crumbs following the currenct crumb
       ###
       afterCrumb = 0
-      afterCrumb += crumbWidths[i] for i in [crumb + 1 .. totalCrumbs] by 1
+      afterCrumb += crumbOptions.crumbWidths[i] for i in [crumb + 1 .. crumbOptions.totalCrumbs] by 1
 
       ###
       this is the magic, the current crumb width is simlpy the difference
@@ -176,165 +188,162 @@ self-invoking anonymous wrapper, which imports jquery on last line
       ###
       set the current crumb object for easy reference
       ###
-      crumbObj = crumbObjs[crumb]
+      crumbObj = crumbOptions.crumbObjs[crumb]
 
-
-      crumbWidthCurrently = crumbObj.outerWidth()
-
-      ###
-      we'll be doing an extra check on the crumb after the current one. if there
-      is one, lets refernce it, otherwise null it out
-      ###
-      if crumb > totalCrumbs
-        nextCrumbObj = crumbObjs[crumb + 1]
-      else
-        nextCrumbObj = null
-
-      ###
-      set the current .shader object for easy reference
-      ###
-      shaderObj = shaderObjs[crumb]
-
-
-      if crumbWidthCurrently < crumbWidth
-        crumbObj.attr "data-expanded", false
-      else
-        crumbObj.attr "data-expanded", true
-
-      #if crumbWidthCurrently == minWidth
-      #  crumbObj.attr "data-collapsed", true
-      #else
-      #  crumbObj.attr "data-collapsed", true
-
-
-
-      ###
-      if the breadcrumbs width is less than what the width is before, after, and
-      including the width of this crumb, then we'll need to start collapsing a
-      crumb, otherwise we should make sure it's full natural width
-      ###
-      if breadcrumbsWidth < beforeCrumb + crumbWidth + afterCrumb
+      if crumbObj
+        crumbWidthCurrently = crumbObj.outerWidth()
 
         ###
-        set the crumb width to our new determined (by diff) width
+        we'll be doing an extra check on the crumb after the current one. if there
+        is one, lets refernce it, otherwise null it out
         ###
-        if allowVariableWidths
-          crumbObj.outerWidth crumbWidthDiff
+        if crumb > crumbOptions.totalCrumbs
+          nextCrumbObj = crumbOptions.crumbObjs[crumb + 1]
         else
-          crumbObj.outerWidth minWidth
+          nextCrumbObj = null
 
         ###
-        if the maxCollapsedCrumbs is set, then lets make it happen
+        set the current .shader object for easy reference
         ###
-        if maxCollapsedCrumbs
+        shaderObj = crumbOptions.shaderObjs[crumb]
+
+
+        if crumbWidthCurrently < crumbWidth
+          crumbObj.attr "data-expanded", false
+        else
+          crumbObj.attr "data-expanded", true
+
+        #if crumbWidthCurrently == crumbOptions.minWidth
+        #  crumbObj.attr "data-collapsed", true
+        #else
+        #  crumbObj.attr "data-collapsed", true
+
+
+        ###
+        if the breadcrumbs width is less than what the width is before, after, and
+        including the width of this crumb, then we'll need to start collapsing a
+        crumb, otherwise we should make sure it's full natural width
+        ###
+        if breadcrumbsWidth < beforeCrumb + crumbWidth + afterCrumb
 
           ###
-          when a crumb diff width is equal to or less than the minimum crumb
-          width, then is collapsed, then flag it with a data attribute otherwise
-          set it to false
+          set the crumb width to our new determined (by diff) width
           ###
-          if crumbWidthDiff < minWidth
-            crumbObj.attr "data-collapsed", true
+          if crumbOptions.allowVariableWidths
+            crumbObj.outerWidth crumbWidthDiff
           else
-            crumbObj.attr "data-collapsed", false
+            crumbObj.outerWidth crumbOptions.minWidth
 
           ###
-          look for the first instance of false, in other words the first
-          uncollapsed crumb. todo: optimize this to run once
+          if the maxCollapsedCrumbs is set, then lets make it happen
           ###
-          collapsedCrumb = crumbsObj.find(""".crumb[data-collapsed="false"]:first""").index()
+          if crumbOptions.maxCollapsedCrumbs
 
-          if collapsedCrumb < 0
-            collapsedCrumb = totalCrumbs - 1
-            expandedCrumb = crumbsObj.find(""".crumb[data-collapsed="true"]:first""").index()
+            ###
+            when a crumb diff width is equal to or less than the minimum crumb
+            width, then is collapsed, then flag it with a data attribute otherwise
+            set it to false
+            ###
+            if crumbWidthDiff < crumbOptions.minWidth
+              crumbObj.attr "data-collapsed", true
+            else
+              crumbObj.attr "data-collapsed", false
 
-          ###
-          if the collapsed crumb index is greater than or equal to the
-          maxCollapsedCrumbs option, then there are too many crumbs visible,
-          and the .crumbs container needs to go left and be hidden by the
-          overflow:hidden of the parent, .infowrap-breadcrumbs. the crumbs
-          can go too far right, because of the loose if conditional, so a
-          protection maxes out at 0
-          ###
-          if collapsedCrumb >= maxCollapsedCrumbs or expandedCrumb >= 0
-            crumbsLeft = -minWidth * (collapsedCrumb - maxCollapsedCrumbs)
-            if crumbsLeft > 0 then crumbsLeft = 0
-            crumbsObj.css "left", crumbsLeft
+            ###
+            look for the first instance of false, in other words the first
+            uncollapsed crumb. todo: optimize this to run once
+            ###
+            crumbOptions.collapsedCrumb = crumbsObj.find(""".crumb[data-collapsed="false"]:first""").index()
 
-        ###
-        the shader moves with the window resize to simulate a growing overlap
-        as the objects get tighter.
-        ###
-        shaderX = -shaderWidth - shaderAntumbra + crumbWidth - crumbWidthDiff
+            if crumbOptions.collapsedCrumb < 0
+              crumbOptions.collapsedCrumb = crumbOptions.totalCrumbs - 1
+              crumbOptions.expandedCrumb = crumbsObj.find(""".crumb[data-collapsed="true"]:first""").index()
 
-        ###
-        the div that creates the shadow should not enter the visible space, it
-        should always be cropped out of view by overflow:hidden
-        ###
-        if shaderX > -shaderWidth then shaderX = -shaderWidth
-
-        ###
-        set the shader x position off the right with position absolute
-        ###
-        shaderObj.css "right", shaderX
-
-        ###
-        if the next crumb is shrinking and the current crumb is not fully
-        collapsed, then the user is doing a quick move and we need to do a fast
-        override to keep up
-        ###
-
-        ###
-        does the crumb exist?
-        ###
-        if nextCrumbObj
+            ###
+            if the collapsed crumb index is greater than or equal to the
+            maxCollapsedCrumbs option, then there are too many crumbs visible,
+            and the .crumbs container needs to go left and be hidden by the
+            overflow:hidden of the parent, .infowrap-breadcrumbs. the crumbs
+            can go too far right, because of the loose if conditional, so a
+            protection maxes out at 0
+            ###
+            if crumbOptions.collapsedCrumb >= crumbOptions.maxCollapsedCrumbs or crumbOptions.expandedCrumb >= 0
+              crumbsLeft = -crumbOptions.minWidth * (crumbOptions.collapsedCrumb - crumbOptions.maxCollapsedCrumbs)
+              if crumbsLeft > 0 then crumbsLeft = 0
+              crumbsObj.css "left", crumbsLeft
 
           ###
-          if the natural width of the next crumb is greater than the next crumbs
-          current width, then the crumb outer width should be the minimum crumb
-          width as per the plugin options
+          the shader moves with the window resize to simulate a growing overlap
+          as the objects get tighter.
           ###
-          if nextCrumbWidth > nextCrumbObj.outerWidth()
-            crumbObj.outerWidth minWidth
-      else
-        ###
-        set the crumb to be full width
-        ###
-        crumbObj.outerWidth crumbWidth
+          shaderX = -crumbOptions.shaderWidth - crumbOptions.shaderAntumbra + crumbWidth - crumbWidthDiff
 
-        ###
-        reset the shadow to its intended starting position at right per the
-        plugin options
-        ###
-        shaderObj.css "right", -shaderWidth - shaderAntumbra
+          ###
+          the div that creates the shadow should not enter the visible space, it
+          should always be cropped out of view by overflow:hidden
+          ###
+          if shaderX > -crumbOptions.shaderWidth then shaderX = -crumbOptions.shaderWidth
 
-    init: ->
+          ###
+          set the shader x position off the right with position absolute
+          ###
+          shaderObj.css "right", shaderX
+
+          ###
+          if the next crumb is shrinking and the current crumb is not fully
+          collapsed, then the user is doing a quick move and we need to do a fast
+          override to keep up
+          ###
+
+          ###
+          does the crumb exist?
+          ###
+          if nextCrumbObj
+
+            ###
+            if the natural width of the next crumb is greater than the next crumbs
+            current width, then the crumb outer width should be the minimum crumb
+            width as per the plugin options
+            ###
+            if nextCrumbWidth > nextCrumbObj.outerWidth()
+              crumbObj.outerWidth crumbOptions.minWidth
+        else
+          ###
+          set the crumb to be full width
+          ###
+          crumbObj.outerWidth crumbWidth
+
+          ###
+          reset the shadow to its intended starting position at right per the
+          plugin options
+          ###
+          shaderObj.css "right", -crumbOptions.shaderWidth - crumbOptions.shaderAntumbra
+
+    init: (options) ->
       ###
       data binding and dom updates
       this reinitializes the crumbs to ensure accuracy
       ###
-      this.build()
-      this.windowResize()
+      methods.build(this, options)
+      methods.windowResize()
       ###
       run the above method on every fire of window resize
       ###
-      $(window).resize -> this.windowResize()
+      $(window).resize -> methods.windowResize()
 
       console.log "init"
 
-    refresh: ->
+    refresh: (options) ->
       ###
       data binding and dom updates
       this reinitializes the crumbs to ensure accuracy
       ###
-      this.build()
-      this.windowResize()
+      methods.build(this, options)
+      methods.windowResize()
 
-    test: ->
-      console.log "hi"
 
   ###
-  declaring the jQery plugin
+  declaring the jQuery plugin
   ###
   $.fn.infowrapBreadcrumbs = (methodOrOptions) ->
 
