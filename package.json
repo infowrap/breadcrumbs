@@ -1,6 +1,6 @@
 {
   "name": "infowrap-breadcrumbs",
-  "version": "0.1.51",
+  "version": "0.2.0",
   "description": "An easy way to expand or collapse menu items, especially when there are many levels like in folder navigation.",
   "main": "js/breadcrumbs.min.js",
   "scripts": {
