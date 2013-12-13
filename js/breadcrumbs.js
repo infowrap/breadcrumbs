@@ -27,53 +27,20 @@ self-invoking anonymous wrapper, which imports jquery on last line
 (function() {
   ((function() {
     return function($) {
-      /*
-      declaring the jQery plugin
-      */
-
-      $.fn.infowrapBreadcrumbs = function(options) {
-        /*
-        save this as a variable so it isn't lost or confused with another this
-        */
-
-        var allowVariableWidths, bcOptions, collapsedCrumb, crumbObjs, crumbWidths, crumbsObj, expandedCrumb, infowrapBreadcrumbsObj, initCrumbs, maxCollapsedCrumbs, minWidth, shaderAntumbra, shaderObjs, shaderWidth, tabWidth, totalCrumbs, updateCrumb, windowResize;
-        infowrapBreadcrumbsObj = this;
-        /*
-        cache the .crumbs to an object for later use
-        */
-
-        crumbsObj = infowrapBreadcrumbsObj.find(".crumbs");
-        /*
-        allowing formal options overrides to be respected
-        
-        now that we have defined your default values, we can manually override them
-        by manipulating them outside the jquery plugin. these changes to the default
-        values will be implemented on all subsequent uses of the jquery plugin.
-        
-        if i want to override one of the default values used for future instances of
-        a plugin, i would write code like the following:
-        
-        $.fn.infowrapBreadcrumbs.defaultOptions.minWidth = 50;
-        $('#helloWorld').infowrapBreadcrumbs();
-        $('#goodbyeWorld').infowrapBreadcrumbs();
-        */
-
-        bcOptions = $.extend({}, $.fn.infowrapBreadcrumbs.defaultOptions, options);
-        console.log(bcOptions.tabWidth);
-        /*
-        globalizing the variables for the method, so if we have to make a change to
-        the varable on its way in, we have a place to address that potential
-        */
-
-        maxCollapsedCrumbs = bcOptions.maxCollapsedCrumbs - 1;
-        minWidth = bcOptions.minWidth;
-        shaderWidth = bcOptions.shaderWidth;
-        shaderAntumbra = bcOptions.shaderAntumbra;
-        allowVariableWidths = bcOptions.allowVariableWidths;
-        tabWidth = bcOptions.tabWidth;
-        collapsedCrumb = expandedCrumb = totalCrumbs = 0;
-        crumbWidths = crumbObjs = shaderObjs = [];
-        initCrumbs = function() {
+      var methods;
+      methods = {
+        build: function() {
+          var collapsedCrumb, crumbObjs, crumbWidths, crumbsObj, expandedCrumb, infowrapBreadcrumbsObj, shaderObjs, totalCrumbs;
+          infowrapBreadcrumbsObj = this;
+          crumbsObj = infowrapBreadcrumbsObj.find(".crumbs");
+          ({
+            maxCollapsedCrumbs: 3,
+            minWidth: 44,
+            shaderWidth: 44,
+            shaderAntumbra: 25,
+            allowVariableWidths: false,
+            tabWidth: 150
+          });
           /*
           the nth crumb that is collapsed counting from the left, and the nth crumb
           that is expanded counting from the left. the expanded crumb is only detected
@@ -160,37 +127,37 @@ self-invoking anonymous wrapper, which imports jquery on last line
 
             return totalCrumbs++;
           });
-        };
-        /*
-        windowResize is a set of operations used in a couple of places, it has been
-        added as a method to call on load and on resize. when the user resizes the
-        page, run the updateCrumb method on each crumb. One is subtracted from
-        totalCrumbs, because there's no need to adjust the last crumb width as the
-        overflow:hidden will handle it
-        */
+        },
+        windowResize: function() {
+          /*
+          windowResize is a set of operations used in a couple of places, it has been
+          added as a method to call on load and on resize. when the user resizes the
+          page, run the updateCrumb method on each crumb. One is subtracted from
+          totalCrumbs, because there's no need to adjust the last crumb width as the
+          overflow:hidden will handle it
+          */
 
-        windowResize = function() {
           var crumb, _i, _ref, _results;
           _results = [];
           for (crumb = _i = 1, _ref = totalCrumbs - 1; _i <= _ref; crumb = _i += 1) {
             _results.push(updateCrumb(crumb, infowrapBreadcrumbsObj.width()));
           }
           return _results;
-        };
-        /*
-        method to run on each crumb to define its width against the other crumbs
-        and against the whole breadcrumbs bar. accepts the inputs of an integer
-        crumb, if referencing 2nd crumb, number is 2. breadcrumbsWidth is
-        an integer of the current container width, which is parent to .crumbs
-        */
+        },
+        updateCrumb: function(crumb, breadcrumbsWidth) {
+          /*
+          method to run on each crumb to define its width against the other crumbs
+          and against the whole breadcrumbs bar. accepts the inputs of an integer
+          crumb, if referencing 2nd crumb, number is 2. breadcrumbsWidth is
+          an integer of the current container width, which is parent to .crumbs
+          */
 
-        updateCrumb = function(crumb, breadcrumbsWidth) {
           /*
           the natural width of the crumb when fully expanded. added as a variable
           for easy reference
           */
 
-          var afterCrumb, beforeCrumb, crumbObj, crumbWidth, crumbWidthCurrently, crumbWidthDiff, crumbsLeft, i, nextCrumbObj, nextCrumbWidth, shaderObj, shaderX, _i, _ref;
+          var afterCrumb, beforeCrumb, collapsedCrumb, crumbObj, crumbWidth, crumbWidthCurrently, crumbWidthDiff, crumbsLeft, expandedCrumb, i, nextCrumbObj, nextCrumbWidth, shaderObj, shaderX, _i, _ref;
           crumbWidth = crumbWidths[crumb];
           /*
           the natural width of the next crumb when fully expanded. added as a
@@ -359,81 +326,49 @@ self-invoking anonymous wrapper, which imports jquery on last line
 
             return shaderObj.css("right", -shaderWidth - shaderAntumbra);
           }
-        };
-        if (options === 'refresh') {
+        },
+        init: function() {
           /*
-          refresh crumbs
           data binding and dom updates
           this reinitializes the crumbs to ensure accuracy
           */
 
-          initCrumbs();
-          windowResize();
+          this.build();
+          this.windowResize();
+          /*
+          run the above method on every fire of window resize
+          */
+
+          $(window).resize(function() {
+            return this.windowResize();
+          });
+          return console.log("init");
+        },
+        refresh: function() {
+          /*
+          data binding and dom updates
+          this reinitializes the crumbs to ensure accuracy
+          */
+
+          this.build();
+          return this.windowResize();
+        },
+        test: function() {
+          return console.log("hi");
         }
-        /*
-        INITIALIZE
-        */
-
-        initCrumbs();
-        /*
-        run the method after load to set the crumb widths correctly
-        */
-
-        windowResize();
-        /*
-        run the above method on every fire of window resize
-        */
-
-        return $(window).resize(function() {
-          return windowResize();
-        });
-        /*
-        maintain chainability -- coming soon!
-        
-        currently not working
-          Uncaught TypeError: Object [object Object] has no method 'find'
-        
-        return this.each ->
-          new $.fn.infowrapBreadcrumbs $(this), options
-        */
-
       };
       /*
-      the default options for the plugin assigned per jquery plugin spec
+      declaring the jQery plugin
       */
 
-      return $.fn.infowrapBreadcrumbs.defaultOptions = {
-        /*
-        the maximum number of visible collapsed crumbs counting from the left
-        */
-
-        maxCollapsedCrumbs: 3,
-        /*
-        the minimum width of a crumb when collapsed
-        */
-
-        minWidth: 44,
-        /*
-        width of the shader block that is hidden in pixels. it is in the crumb
-        object, but is pushed far right and hidden by the crumb's `overflow: hidden`
-        */
-
-        shaderWidth: 44,
-        /*
-        the distance of your css shadow antumbra in pixels
-        */
-
-        shaderAntumbra: 25,
-        /*
-        allow variable widths for crumbs or only show as expanded/collapsed
-        */
-
-        allowVariableWidths: false,
-        /*
-        the width of a tab when expanded
-        */
-
-        tabWidth: 150
+      return $.fn.infowrapBreadcrumbs = function(methodOrOptions) {
+        if (methods[methodOrOptions]) {
+          return methods[methodOrOptions].apply(this, Array.prototype.slice.call(arguments, 1));
+        } else if (typeof methodOrOptions === 'object' || !methodOrOptions) {
+          return methods.init.apply(this, arguments);
+        } else {
+          return $.error('Method ' + methodOrOptions + ' does not exist');
+        }
       };
     };
     /*

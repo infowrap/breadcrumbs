@@ -1,6 +1,9 @@
 (function() {
   $(window).load(function() {
-    return $(".infowrap-breadcrumbs").infowrapBreadcrumbs();
+    $(".infowrap-breadcrumbs").infowrapBreadcrumbs({
+      tabWidth: 500
+    });
+    return $(".infowrap-breadcrumbs").refresh();
   });
 
 }).call(this);

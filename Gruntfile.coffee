@@ -34,6 +34,13 @@ module.exports = (grunt) ->
           "js/example.min.js"
         ]
         dest: "js/combined.min.js"
+      js:
+        src: [
+          "bower_components/jquery/jquery.js"
+          "js/breadcrumbs.js"
+          "js/example.js"
+        ]
+        dest: "js/combined.js"
     jade:
       options:
         pretty: true
@@ -95,6 +102,7 @@ module.exports = (grunt) ->
     "uglify:breadcrumbs"
     "uglify:example"
     "concat:jsMin"
+    "concat:js"
   ]
 
   grunt.registerTask "buildJade", [
