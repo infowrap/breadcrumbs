@@ -9222,7 +9222,7 @@ self-invoking anonymous wrapper, which imports jquery on last line
       minWidth: 44,
       maxCollapsedCrumbs: 3
     });
-    return $(".infowrap-breadcrumbs").infowrapBreadcrumbs('refresh');
+    return $(".infowrap-breadcrumbs").infowrapBreadcrumbs("refresh");
   });
 
 }).call(this);
