@@ -331,8 +331,6 @@ self-invoking anonymous wrapper, which imports jquery on last line
       ###
       $(window).resize -> methods.windowResize()
 
-      console.log "init"
-
     refresh: (options) ->
       ###
       data binding and dom updates
