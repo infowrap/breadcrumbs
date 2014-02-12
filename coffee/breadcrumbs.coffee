@@ -137,8 +137,9 @@ do ($ = jQuery, window = window) ->
       totalCrumbs, because there's no need to adjust the last crumb width as the
       overflow:hidden will handle it
       ###
+      width = infowrapBreadcrumbsObj.width()
       for crumb in [1 .. crumbOptions.totalCrumbs - 1] by 1
-        methods.updateCrumb crumb, infowrapBreadcrumbsObj.width()
+        methods.updateCrumb crumb, width
 
     updateCrumb: (crumb, breadcrumbsWidth) ->
       ###
@@ -325,7 +326,10 @@ do ($ = jQuery, window = window) ->
       ###
       run the above method on every fire of window resize
       ###
-      $(window).resize -> methods.windowResize()
+      if options.returnResizeFn
+        return methods.windowResize
+      else
+        $(window).resize -> methods.windowResize()
 
     refresh: (options) ->
       ###

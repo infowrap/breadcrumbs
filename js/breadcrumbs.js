@@ -138,10 +138,11 @@ some text pulled from http://msdn.microsoft.com/en-us/magazine/ff608209.aspx
         overflow:hidden will handle it
         */
 
-        var crumb, _i, _ref, _results;
+        var crumb, width, _i, _ref, _results;
+        width = infowrapBreadcrumbsObj.width();
         _results = [];
         for (crumb = _i = 1, _ref = crumbOptions.totalCrumbs - 1; _i <= _ref; crumb = _i += 1) {
-          _results.push(methods.updateCrumb(crumb, infowrapBreadcrumbsObj.width()));
+          _results.push(methods.updateCrumb(crumb, width));
         }
         return _results;
       },
@@ -342,9 +343,13 @@ some text pulled from http://msdn.microsoft.com/en-us/magazine/ff608209.aspx
         run the above method on every fire of window resize
         */
 
-        return $(window).resize(function() {
-          return methods.windowResize();
-        });
+        if (options.returnResizeFn) {
+          return methods.windowResize;
+        } else {
+          return $(window).resize(function() {
+            return methods.windowResize();
+          });
+        }
       },
       refresh: function(options) {
         /*
