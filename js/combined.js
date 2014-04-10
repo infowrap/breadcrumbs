@@ -8838,8 +8838,6 @@ Example usage
   see descriptions below in defaultOptions
   options =
     minWidth: 30
-    shaderWidth: 44
-    shaderAntumbra: 20
   $(".infowrap-breadcrumbs").infowrapBreadcrumbs(options)
 
   you can also refresh the crumbs when the DOM dynamically updates
@@ -8859,8 +8857,6 @@ some text pulled from http://msdn.microsoft.com/en-us/magazine/ff608209.aspx
     crumbOptions = {
       maxCollapsedCrumbs: 3,
       minWidth: 44,
-      shaderWidth: 44,
-      shaderAntumbra: 25,
       allowVariableWidths: false,
       tabWidth: 150,
       /*
@@ -8890,13 +8886,7 @@ some text pulled from http://msdn.microsoft.com/en-us/magazine/ff608209.aspx
       need to perform an expensive `find`
       */
 
-      crumbObjs: [],
-      /*
-      store each crumb .shader object in an object for later reference. otherwise
-      you'll need to perform an expensive `find`
-      */
-
-      shaderObjs: []
+      crumbObjs: []
     };
     methods = {
       build: function(element, options) {
@@ -8929,20 +8919,6 @@ some text pulled from http://msdn.microsoft.com/en-us/magazine/ff608209.aspx
 
           crumbObj.removeAttr("data-collapsed");
           crumbObj.removeAttr("style");
-          /*
-          add the shader div, which is a moving piece. would like to add with
-          :after, but currently it cant be manipulated in jquery. triple quotes
-          used so the html can be typed naturally
-          */
-
-          if (!crumbObj.find('.shader').length) {
-            crumbObj.append("<div class=\"shader\"></div>");
-          }
-          /*
-          cache the shadow of the crumb to a unique object for later use
-          */
-
-          crumbOptions.shaderObjs[index + 1] = crumbObj.find(".shader");
           /*
           the outer width of each crumb (width and padding, margin, etc)
           */
@@ -8989,7 +8965,7 @@ some text pulled from http://msdn.microsoft.com/en-us/magazine/ff608209.aspx
         for easy reference
         */
 
-        var afterCrumb, beforeCrumb, crumbObj, crumbWidth, crumbWidthCurrently, crumbWidthDiff, crumbsLeft, i, nextCrumbObj, nextCrumbWidth, shaderObj, shaderX, _i, _ref, _ref1;
+        var afterCrumb, beforeCrumb, crumbObj, crumbWidth, crumbWidthCurrently, crumbWidthDiff, crumbsLeft, i, nextCrumbObj, nextCrumbWidth, _i, _ref, _ref1;
         crumbWidth = crumbOptions.crumbWidths[crumb];
         /*
         the natural width of the next crumb when fully expanded. added as a
@@ -9037,11 +9013,6 @@ some text pulled from http://msdn.microsoft.com/en-us/magazine/ff608209.aspx
           } else {
             nextCrumbObj = null;
           }
-          /*
-          set the current .shader object for easy reference
-          */
-
-          shaderObj = crumbOptions.shaderObjs[crumb];
           if (crumbWidthCurrently < crumbWidth) {
             crumbObj.attr("data-expanded", false);
           } else {
@@ -9107,25 +9078,6 @@ some text pulled from http://msdn.microsoft.com/en-us/magazine/ff608209.aspx
               }
             }
             /*
-            the shader moves with the window resize to simulate a growing overlap
-            as the objects get tighter.
-            */
-
-            shaderX = -crumbOptions.shaderWidth - crumbOptions.shaderAntumbra + crumbWidth - crumbWidthDiff;
-            /*
-            the div that creates the shadow should not enter the visible space, it
-            should always be cropped out of view by overflow:hidden
-            */
-
-            if (shaderX > -crumbOptions.shaderWidth) {
-              shaderX = -crumbOptions.shaderWidth;
-            }
-            /*
-            set the shader x position off the right with position absolute
-            */
-
-            shaderObj.css("right", shaderX);
-            /*
             if the next crumb is shrinking and the current crumb is not fully
             collapsed, then the user is doing a quick move and we need to do a fast
             override to keep up
@@ -9151,13 +9103,7 @@ some text pulled from http://msdn.microsoft.com/en-us/magazine/ff608209.aspx
             set the crumb to be full width
             */
 
-            crumbObj.outerWidth(crumbWidth);
-            /*
-            reset the shadow to its intended starting position at right per the
-            plugin options
-            */
-
-            return shaderObj.css("right", -crumbOptions.shaderWidth - crumbOptions.shaderAntumbra);
+            return crumbObj.outerWidth(crumbWidth);
           }
         }
       },
